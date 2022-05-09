@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const cors = require('cors');
+
+app.use(cors());
 
 const filialeModel = require('./models/Filiales');
 
@@ -10,12 +13,12 @@ mongoose.connect('mongodb://localhost:27017/TGCC', {
     useNewUrlParser: true,
 }).then(console.log('connected succesfully'));
 
-app.get('/insert', async (req, res) => {
+app.post('/insert', async (req, res) => {
     const filialeTitle = req.body.filialeTitle;
     const filialeDescription = req.body.filialeDescription;
     const filiale = new filialeModel({ 
-        filialeTitle: "OXYREVET",
-        filialeDesc: "Créée en 2019, Oxyrevet met au service des particuliers et des entreprises privées ou publiques"
+        filialeTitle: filialeTitle,
+        filialeDesc: filialeDescription
     });
 
     try{
@@ -24,6 +27,16 @@ app.get('/insert', async (req, res) => {
         console.log(err);
     }
     res.send('Data inserted!');
+})
+
+app.get('/showFiliales', async (req, res) => {
+    filialeModel.find({}, (err, result) => {
+        if(err){
+            res.send(err);
+        }
+
+        res.send(result);
+    })
 })
 
 app.listen(3001, () => {
